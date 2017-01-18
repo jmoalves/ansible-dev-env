@@ -1,0 +1,31 @@
+# Instala JDK
+---
+- hosts: localhost
+
+  vars:
+    envRoot: ~/java-env
+    jdkRoot: "{{ envRoot }}/jdk"
+    repoUrl: "http://localhost:8081/repository/dev-env"
+    localRepo: "{{ envRoot }}/00-localRepo"
+    jdkRepoPath: "jdk/{{ ansible_system }}"
+
+  tasks:
+    - name: Repo dir
+      file: path={{ localRepo }}/{{ jdkRepoPath }} state=directory
+
+    - name: Download - Linux JDK
+      get_url: url={{ repoUrl }}/{{ jdkRepoPath }}/{{ item }} dest={{ localRepo }}/{{ jdkRepoPath }}/{{ item }}
+      with_items:
+        - jdk1.5.0_22.tar.gz
+        - jdk1.6.0_45.tar.gz
+        - jdk-7u80-linux-x64.tar.gz
+        - jdk-8u121-linux-x64.tar.gz
+
+    - name: Ensures {{ jdkRoot }} dir exists
+      file: path={{ jdkRoot }} state=directory
+
+    - name: Install JDK
+      unarchive: src={{ item }} dest={{ jdkRoot }}
+      with_fileglob:
+        - "{{ localRepo }}/{{ jdkRepoPath }}/*"
+

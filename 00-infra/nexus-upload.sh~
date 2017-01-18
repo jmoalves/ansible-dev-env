@@ -1,0 +1,14 @@
+#!/bin/bash
+
+srcFile=$1
+destFile=$2
+
+if [ "a$destFile" = "a" ]; then
+	destFile=$srcFile
+fi
+
+nexusUser=admin
+nexusPassword=admin123
+
+curl -v --user '${nexusUser}:${nexusPassword}' --upload-file ${srcFile} http://localhost:8081/repository/dev-env/${destFile}
+
